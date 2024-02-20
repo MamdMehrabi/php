@@ -8,7 +8,7 @@ header('Content-Type: application/json');
 
 if(!empty($_parameters)){
     if(!empty($_parameters['ip'])){
-        userInfo($_parameters["ip"]);
+        ipcheck($_parameters["ip"]);
     }
 }
 else{
@@ -26,23 +26,33 @@ function noParameters(){
     return;
 }
 
-function userInfo($link){
+function ipcheck($link){
     $url = "https://ipwho.is/$link";
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     $response = curl_exec($ch);
     $ip = json_decode($response) -> ip;
-    $country = json_decode($response) -> country;
-    echo json_encode([
-        "name" => "Mamad",
-        "Mehrabi" => "Mehrabi",
-        "age" => 32,
-        "Your link" => $link,
-        "result" => [
-            "name video" => "Hello World $ip",
-            "country" => $country,
-            $response
-        ]
-    ]);
-    return;
+    $success = json_decode($response) -> success;
+    if($success == true){
+        $img = json_decode($response) -> flag -> emoji;
+        $country = json_decode($response) -> country;
+        $conn = json_decode($response) -> connection -> isp;
+        
+        echo json_encode([
+            "success" => true,
+            "ip" => $ip,
+            "Created By" => "@TheHeroAPI and @Mamad Mehrabi in telegram",
+            "result" => [
+                $response
+            ]
+        ]);
+        return;
+    }
+    else{
+        echo json_encode([
+            "ip" => $ip,
+            "result" => false,
+            "message" => "Please Enter Your IP!!"
+        ]);
+    }
 }
